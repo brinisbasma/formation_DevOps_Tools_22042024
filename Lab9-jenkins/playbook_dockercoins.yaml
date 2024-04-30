@@ -1,0 +1,22 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Copy k8s_dockercoins.yml to master
+    copy:
+      src: k8s_dockercoins.yaml
+      dest: /tmp
+    tags:
+    - copy_dockercoins
+  - name: Sleep 10s
+    command: sleep 10
+  - name: Deploy dockercoins
+    command: kubectl apply -f /tmp/k8s_dockercoins.yaml
+    register: deploy_result 
+    tags:
+    - deploy_dockercoins
+    notify: Display deployment result on screen
+  
+  handlers:
+  - name: Display deployment result on screen
+    debug:
+      msg: "{{ deploy_result.stdout_lines }}"
